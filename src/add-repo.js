@@ -35,7 +35,7 @@ const addRepo = async () => {
         "Do you want to add another repo?(y/n) "
       );
       if (answer.toLowerCase() === "y") {
-        addRepo(readline);
+        addRepo();
       } else {
         resolve();
       }
