@@ -4,7 +4,7 @@ const { join } = require("path");
 
 const { execSync } = require("child_process");
 const cloneRepo = async (repo) => {
-  const path = join(__dirname, "tmp", repo.slug);
+  const path = join(__dirname, '..', "tmp", repo.slug);
   const baseUri = `${process.env.BASE_REPO}/${repo.slug}.git`;
   try {
     const alreadyCloned = await fse.pathExists(join(path, ".git"));
