@@ -10,8 +10,10 @@ const cloneRepo = async (repo) => {
     const alreadyCloned = await fse.pathExists(join(path, ".git"));
     if (alreadyCloned) {
       console.log(`${repo.name} already cloned!\n`.yellow);
-      console.log(`Fetching ${repo.name}...`.blue);
+      console.log(`Fetching ${repo.name}...\n`.blue);
       execSync(`cd ${path} && git fetch`);
+      console.log(`${repo.name} fetched Successfully!\n`.green);
+
       return;
     }
     console.log(`\nCloning ${repo.name}...\n`.blue);

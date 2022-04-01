@@ -53,7 +53,9 @@ const getUnmergedReleases = async () => {
     if (!repos.length) {
       resolve("There are no repos that match the criteria".red);
     }
-
+    const table = new Table({
+      head: ["Repo", "Branch", "Author", "Date", "Ahead", "Stories", "Status"],
+    });
     for (let repo of repos) {
       await cloneRepo(repo);
       const dir = join(__dirname, "..", "tmp", repo.slug);
@@ -74,38 +76,36 @@ const getUnmergedReleases = async () => {
         .map((branch) => JSON.parse(branch));
       if (!items.length) {
         console.log(
-          `\nThis repo does not contain release branches ahead ${defaultBranch}`
+          `${repo.name} does not contain release branches ahead ${defaultBranch}`
             .green
         );
       } else {
-        const table = new Table({
-          head: ["Branch", "Author", "Date", "Ahead", "Stories", "Status"],
-        });
         for (let item of items) {
           item.ahead = Number(
             execSync(`cd ${dir} && git rev-list --right-only --count origin/${defaultBranch}...${item.branch}
           `).toString()
           );
+          item = { repo: repo.name, ...item };
           item.stories = getStories(item.branch).join(" ");
           item.status = "  ●  ".green;
-          const stories = item.stories.split(" ")
+          const stories = item.stories.split(" ");
           if (stories.length > 1) {
             for (let story of stories) {
               const ahead = Number(
                 execSync(`cd ${dir} && git rev-list --right-only --count ${item.branch}...origin/feature/${story}
               `).toString()
               );
-                console.log(ahead)
-              if(ahead <= 0) {
+              console.log(ahead);
+              if (ahead <= 0) {
                 item.status = "  ●  ".red;
               }
             }
           }
           table.push(getTableRow(item));
         }
-        console.log(table.toString());
       }
     }
+    console.log(table.toString());
     console.log("done".green);
     resolve(OPTIONS_MESSAGE.cyan);
   });
